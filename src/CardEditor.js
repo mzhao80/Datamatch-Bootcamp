@@ -7,7 +7,7 @@ class CardEditor extends React.Component {
         this.state = { front: '', back: '' };
     }
     addCard = () => {
-        if (this.state.front !== '' || this.state.back !== '') {
+        if (this.state.front.trim() !== '' && this.state.back.trim() !== '') {
             this.props.addCard(this.state);
             this.setState({ front: '', back: '' });
         }
