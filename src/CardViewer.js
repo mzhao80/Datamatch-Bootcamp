@@ -1,4 +1,7 @@
 import React from 'react';
+import './CardEditor.css'
+
+import { Link } from 'react-router-dom';
 
 class CardViewer extends React.Component {
     constructor(props) {
@@ -41,7 +44,7 @@ class CardViewer extends React.Component {
                     <button onClick={this.prev} disabled={this.state.currIndex === 0}>Previous</button>
                     <button onClick={this.next} disabled={this.state.currIndex === this.props.cards.length - 1}>Next</button>
                     <hr />
-                    <button onClick={this.props.switchMode}>Go to card editor</button>
+                    <Link to="/editor">Go to card editor.</Link>
                 </div>
             )
         } else {
@@ -60,7 +63,7 @@ class CardViewer extends React.Component {
                     <button onClick={this.prev} disabled={this.state.currIndex === 0}>Previous</button>
                     <button onClick={this.next} disabled={this.state.currIndex === this.props.cards.length - 1}>Next</button>
                     <hr />
-                    <button onClick={this.props.switchMode}>Go to card editor</button>
+                    <Link to="/editor">Go to card editor.</Link>
                 </div>
             )
         }
