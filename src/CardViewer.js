@@ -1,73 +1,78 @@
-import React from 'react';
-import './CardEditor.css'
+import React from "react";
+import "./CardEditor.css";
 
-import { Link } from 'react-router-dom';
+import { Link, withRouter } from "react-router-dom";
+import { firebaseConnect, isLoaded, isEmpty } from "react-redux-firebase";
+import { connect } from "react-redux";
+import { compose } from "redux";
 
 class CardViewer extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { front: true, currIndex: 0 };
+  constructor(props) {
+    super(props);
+    this.state = { front: true, currIndex: 0 };
+  }
+
+  flip = () => this.setState({ front: !this.state.front });
+  prev = () => this.setState({ currIndex: this.state.currIndex - 1 });
+  next = () => this.setState({ currIndex: this.state.currIndex + 1 });
+
+  render() {
+    if (!isLoaded(this.props.cards)) {
+      return <div>Loading...</div>;
     }
 
-    switchSide = () => this.setState({ front: !this.state.front });
-    prev = () => this.setState({ currIndex: this.state.currIndex - 1 });
-    next = () => this.setState({ currIndex: this.state.currIndex + 1 });
-
-    render() {
-        const cardFront = this.props.cards.map((card, index) => {
-            return (
-                <tr key={index}>
-                    {card.front}
-                </tr>
-            )
-        })
-        const cardBack = this.props.cards.map((card, index) => {
-            return (
-                <tr key={index}>
-                    {card.back}
-                </tr>
-            )
-        })
-        if (this.state.front) {
-            return (
-                <div>
-                    <h2>Card Viewer</h2>
-                    <h3>Front</h3>
-                    <table>
-                        <tr>
-                            <td onClick={this.switchSide}>{cardFront[this.state.currIndex]}</td>
-                        </tr>
-                    </table>
-                    <br></br>
-                    Card {this.state.currIndex + 1}/{this.props.cards.length}
-                    <br></br>
-                    <button onClick={this.prev} disabled={this.state.currIndex === 0}>Previous</button>
-                    <button onClick={this.next} disabled={this.state.currIndex === this.props.cards.length - 1}>Next</button>
-                    <hr />
-                    <Link to="/editor">Go to card editor.</Link>
-                </div>
-            )
-        } else {
-            return (
-                <div>
-                    <h2>Card Viewer</h2>
-                    <h3>Back</h3>
-                    <table>
-                        <tr>
-                            <td onClick={this.switchSide}>{cardBack[this.state.currIndex]}</td>
-                        </tr>
-                    </table>
-                    <br></br>
-                    Card {this.state.currIndex + 1}/{this.props.cards.length}
-                    <br></br>
-                    <button onClick={this.prev} disabled={this.state.currIndex === 0}>Previous</button>
-                    <button onClick={this.next} disabled={this.state.currIndex === this.props.cards.length - 1}>Next</button>
-                    <hr />
-                    <Link to="/editor">Go to card editor.</Link>
-                </div>
-            )
-        }
+    if (isEmpty(this.props.cards)) {
+      return <div>Page not found!</div>;
     }
+
+    const card =
+      this.props.cards[this.state.currIndex][
+        this.state.front ? "front" : "back"
+      ];
+
+    return (
+      <div>
+        <h2>{this.props.name}</h2>
+        <table>
+          <tbody>
+            <tr>
+              <td onClick={this.flip}>{card}</td>
+            </tr>
+          </tbody>
+        </table>
+        <br></br>
+        Card {this.state.currIndex + 1}/{this.props.cards.length}
+        <br></br>
+        <button onClick={this.prev} disabled={this.state.currIndex === 0}>
+          Previous
+        </button>
+        <button
+          onClick={this.next}
+          disabled={this.state.currIndex === this.props.cards.length - 1}
+        >
+          Next
+        </button>
+        <hr />
+        <Link to="/">Home</Link>
+      </div>
+    );
+  }
 }
 
-export default CardViewer;
+const mapStateToProps = (state, props) => {
+  console.log(state);
+  const deck = state.firebase.data[props.match.params.deckId];
+  const name = deck && deck.name;
+  const cards = deck && deck.cards;
+  return { cards: cards, name: name };
+};
+
+export default compose(
+  withRouter,
+  firebaseConnect((props) => {
+    console.log("props", props);
+    const deckId = props.match.params.deckId;
+    return [{ path: `/flashcards/${deckId}`, storeAs: deckId }];
+  }),
+  connect(mapStateToProps)
+)(CardViewer);
