@@ -33,6 +33,7 @@ class CardViewer extends React.Component {
     return (
       <div>
         <h2>{this.props.name}</h2>
+        <h3>{this.props.description}</h3>
         <table>
           <tbody>
             <tr>
@@ -63,7 +64,8 @@ const mapStateToProps = (state, props) => {
   const deck = state.firebase.data[props.match.params.deckId];
   const name = deck && deck.name;
   const cards = deck && deck.cards;
-  return { cards: cards, name: name };
+  const description = deck && deck.description;
+  return { cards: cards, name: name, description: description };
 };
 
 export default compose(

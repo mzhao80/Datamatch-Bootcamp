@@ -16,6 +16,7 @@ class CardEditor extends React.Component {
       front: "",
       back: "",
       name: "",
+      description: "",
     };
   }
 
@@ -23,7 +24,7 @@ class CardEditor extends React.Component {
     if (this.state.front.trim() !== "" && this.state.back.trim() !== "") {
       const newCard = { front: this.state.front, back: this.state.back };
       const cards = this.state.cards.slice().concat(newCard);
-      this.setState({ cards, front: "", back: "" });
+      this.setState({ cards, front: "", back: "", description: "" });
     }
   };
 
@@ -40,9 +41,16 @@ class CardEditor extends React.Component {
   createDeck = () => {
     const deckId = this.props.firebase.push("/flashcards").key;
     const updates = {};
-    const newDeck = { cards: this.state.cards, name: this.state.name };
+    const newDeck = {
+      cards: this.state.cards,
+      name: this.state.name,
+      description: this.state.description,
+    };
     updates[`/flashcards/${deckId}`] = newDeck;
-    updates[`/homepage/${deckId}`] = { name: this.state.name };
+    updates[`/homepage/${deckId}`] = {
+      name: this.state.name,
+      description: this.state.description,
+    };
     const onComplete = () => {
       this.props.history.push(`/viewer/${deckId}`);
     };
@@ -72,6 +80,15 @@ class CardEditor extends React.Component {
             onChange={this.handleChange}
             placeholder="Name of Deck"
             value={this.state.name}
+          />
+        </div>
+        <div>
+          Deck Description:{" "}
+          <input
+            name="description"
+            onChange={this.handleChange}
+            placeholder="Description of Deck"
+            value={this.state.description}
           />
         </div>
         <br />

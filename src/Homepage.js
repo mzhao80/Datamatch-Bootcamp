@@ -30,6 +30,8 @@ class Homepage extends React.Component {
             <Link to={`/viewer/${deckId}`}>
               {this.props.decks[deckId].name}
             </Link>
+            <br />
+            {this.props.decks[deckId].description}
           </td>
         </tr>
       );
